@@ -12,19 +12,14 @@ struct Collector {
     count: usize,
 }
 
-impl Collector {
-    fn actor(args: (Arc<Mutex<std::sync::mpsc::Sender<()>>>, usize)) -> Self {
-        let (cv, amount) = args;
-        info!("Collector started, waiting for {} messages", amount);
+impl ActorFactoryArgs<(Arc<Mutex<std::sync::mpsc::Sender<()>>>, usize)> for Collector {
+    fn create_args((cv, amount): (Arc<Mutex<std::sync::mpsc::Sender<()>>>, usize)) -> Self {
+        // info!("Collector started, waiting for {} messages", amount);
         Collector {
             cv,
             amount,
             count: 0,
         }
-    }
-
-    fn props(cv: Arc<Mutex<std::sync::mpsc::Sender<()>>>, amount: usize) -> BoxActorProd<Collector> {
-        Props::new_args(Collector::actor, (cv, amount))
     }
 }
 
@@ -48,30 +43,25 @@ struct MyActor {
     collector: ActorRef<()>,
 }
 
+impl ActorFactoryArgs<(usize, ActorRef<()>)> for MyActor {
+    fn create_args((index, collector): (usize, ActorRef<()>)) -> Self {
+        // info!("Actor({}) Started", index);
+        MyActor {
+            collector
+        }
+    }
+}
+
 // implement the Actor trait
 impl Actor for MyActor {
     type Msg = String;
 
     fn recv(&mut self,
-            ctx: &Context<String>,
-            msg: String,
+            _ctx: &Context<String>,
+            _msg: String,
             _sender: Sender) {
-        debug!("[{}] :: Received: {}", ctx.myself.name(), msg);
+        // debug!("[{}] :: Received: {}", ctx.myself.name(), msg);
         self.collector.tell((), None);
-    }
-}
-
-impl MyActor {
-    fn actor(args: (usize, ActorRef<()>)) -> Self {
-        let (index, collector) = args;
-        info!("Actor({}) Started", index);
-        MyActor {
-            collector
-        }
-    }
-
-    fn props(args: (usize, ActorRef<()>)) -> BoxActorProd<MyActor> {
-        Props::new_args(MyActor::actor, args)
     }
 }
 
@@ -115,35 +105,35 @@ fn main() {
     let amount = options.message_count - (options.message_count % sender_count);
     let actor_count = options.actor_count;
 
-    info!("Message count: {}", amount);
+    // info!("Message count: {}", amount);
 
-    info!("Starting Collector");
-    let collector = sys.actor_of(Collector::props(Arc::new(Mutex::new(tx.clone())), amount), "collector").unwrap();
+    // info!("Starting Collector");
+    let collector = sys.actor_of_args::<Collector, _>("collector", (Arc::new(Mutex::new(tx.clone())), amount)).unwrap();
 
-    info!("Starting {} Actors", actor_count);
-    let actors = (0..actor_count).map(|i| sys.actor_of(MyActor::props((i, collector.clone())), &format!("my-actor-{}", i)).unwrap()).collect::<Vec<_>>();
+    // info!("Starting {} Actors", actor_count);
+    let actors = (0..actor_count).map(|i| sys.actor_of_args::<MyActor, _>(&format!("my-actor-{}", i), (i, collector.clone())).unwrap()).collect::<Vec<_>>();
 
     let actors = Arc::new(RwLock::new(actors));
 
     let amount_per_thread = amount / sender_count;
 
-    info!("Starting {} Sender Threads", sender_count);
+    // info!("Starting {} Sender Threads", sender_count);
     for c in 0..sender_count {
         let actors_clone = actors.clone();
         std::thread::spawn(move || {
             for i in c..amount_per_thread + c {
                 let actor = actors_clone.read().unwrap();
                 let index = i % actor_count;
-                debug!("Sender({}) sending Message to Actor({})", c, index);
+                // debug!("Sender({}) sending Message to Actor({})", c, index);
                 actor.get(index).unwrap().tell(format!("Hello from Sender({})", c), None);
             }
         });
     }
 
-    info!("Waiting for all actors to finish");
+    // info!("Waiting for all actors to finish");
     let _ = rx.recv();
 
-    info!("Shutting down");
+    // info!("Shutting down");
     let mut r = sys.shutdown();
     loop {
         if let Ok(Some(())) = r.try_recv() {
