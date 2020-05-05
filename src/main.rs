@@ -1,5 +1,28 @@
+#![allow(unused)]
+
 #[macro_use]
+#[cfg(feature = "logging")]
 extern crate log;
+
+#[cfg(not(feature = "logging"))]
+macro_rules! info {
+    ($e:expr) => {};
+
+    ($e:expr, $($es:expr),+) => {{
+        info! { $e }
+        info! { $($es),+ }
+    }};
+}
+
+#[cfg(not(feature = "logging"))]
+macro_rules! debug {
+    ($e:expr) => {};
+
+    ($e:expr, $($es:expr),+) => {{
+        debug! { $e }
+        debug! { $($es),+ }
+    }};
+}
 
 use std::sync::{Arc, Mutex, RwLock};
 
@@ -14,7 +37,9 @@ struct Collector {
 
 impl ActorFactoryArgs<(Arc<Mutex<std::sync::mpsc::Sender<()>>>, usize)> for Collector {
     fn create_args((cv, amount): (Arc<Mutex<std::sync::mpsc::Sender<()>>>, usize)) -> Self {
-        // info!("Collector started, waiting for {} messages", amount);
+        if cfg!(feature = "logging") {
+            info!("Collector started, waiting for {} messages", amount);
+        }
         Collector {
             cv,
             amount,
@@ -45,7 +70,7 @@ struct MyActor {
 
 impl ActorFactoryArgs<(usize, ActorRef<()>)> for MyActor {
     fn create_args((index, collector): (usize, ActorRef<()>)) -> Self {
-        // info!("Actor({}) Started", index);
+        info!("Actor({}) Started", index);
         MyActor {
             collector
         }
@@ -54,13 +79,13 @@ impl ActorFactoryArgs<(usize, ActorRef<()>)> for MyActor {
 
 // implement the Actor trait
 impl Actor for MyActor {
-    type Msg = String;
+    type Msg = usize;
 
     fn recv(&mut self,
-            _ctx: &Context<String>,
-            _msg: String,
+            ctx: &Context<usize>,
+            msg: usize,
             _sender: Sender) {
-        // debug!("[{}] :: Received: {}", ctx.myself.name(), msg);
+        debug!("[{}] :: Received: {}", ctx.myself.name(), msg);
         self.collector.tell((), None);
     }
 }
@@ -105,35 +130,35 @@ fn main() {
     let amount = options.message_count - (options.message_count % sender_count);
     let actor_count = options.actor_count;
 
-    // info!("Message count: {}", amount);
+    info!("Message count: {}", amount);
 
-    // info!("Starting Collector");
+    info!("Starting Collector");
     let collector = sys.actor_of_args::<Collector, _>("collector", (Arc::new(Mutex::new(tx.clone())), amount)).unwrap();
 
-    // info!("Starting {} Actors", actor_count);
+    info!("Starting {} Actors", actor_count);
     let actors = (0..actor_count).map(|i| sys.actor_of_args::<MyActor, _>(&format!("my-actor-{}", i), (i, collector.clone())).unwrap()).collect::<Vec<_>>();
 
     let actors = Arc::new(RwLock::new(actors));
 
     let amount_per_thread = amount / sender_count;
 
-    // info!("Starting {} Sender Threads", sender_count);
+    info!("Starting {} Sender Threads", sender_count);
     for c in 0..sender_count {
         let actors_clone = actors.clone();
         std::thread::spawn(move || {
             for i in c..amount_per_thread + c {
                 let actor = actors_clone.read().unwrap();
                 let index = i % actor_count;
-                // debug!("Sender({}) sending Message to Actor({})", c, index);
-                actor.get(index).unwrap().tell(format!("Hello from Sender({})", c), None);
+                debug!("Sender({}) sending Message to Actor({})", c, index);
+                actor.get(index).unwrap().tell( c, None);
             }
         });
     }
 
-    // info!("Waiting for all actors to finish");
+    info!("Waiting for all actors to finish");
     let _ = rx.recv();
 
-    // info!("Shutting down");
+    info!("Shutting down");
     let mut r = sys.shutdown();
     loop {
         if let Ok(Some(())) = r.try_recv() {
