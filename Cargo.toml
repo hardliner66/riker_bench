@@ -3,6 +3,7 @@ name = "riker_bench"
 version = "0.1.0"
 authors = ["hardliner66 <hardliner66@gmail.com>"]
 edition = "2018"
+default-run = "riker_bench"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [profile.release]
