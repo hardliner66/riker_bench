@@ -1,0 +1,18 @@
+[tasks.build]
+command = "cargo"
+args = ["build", "--release"]
+
+[tasks.bench_single]
+install_crate = "hyperfine"
+command = "hyperfine"
+args = ["-w", "1", "-r", "20", "target\\release\\riker_bench.exe -a 1 -m 99999"]
+dependencies = ["build"]
+
+[tasks.bench_multi]
+install_crate = "hyperfine"
+command = "hyperfine"
+args = ["-w", "1", "-r", "20", "target\\release\\riker_bench.exe -m 99999"]
+dependencies = ["build"]
+
+# [tasks.bench]
+# dependencies = ["bench_single", "bench_multi"]
