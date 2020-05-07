@@ -8,12 +8,13 @@ edition = "2018"
 [profile.release]
 debug = true
 
+[[bin]]
+name = "riker_bench"
+
 [dependencies]
 argparse = "0.2.2"
 num_cpus = "1.13.0"
 log = "0.4.8"
 env_logger = "0.7.1"
 
-riker = { git = "https://github.com/hardliner66/riker" }
-#riker = { git = "https://github.com/hardliner66/riker", branch = "remove_need_for_manual_boxing" }
-#riker = { git = "https://github.com/hardliner66/riker", branch = "actor_creation" }
+riker = { git = "https://github.com/hardliner66/riker", branch = "allow_use_of_bounded_channel" }
