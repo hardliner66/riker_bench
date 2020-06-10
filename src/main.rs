@@ -127,8 +127,12 @@ fn main() {
     let sender_count = num_cpus::get_physical();
 
     let (tx, rx) = std::sync::mpsc::channel();
-    let amount = options.message_count - (options.message_count % sender_count);
+    let mut amount = options.message_count - (options.message_count % sender_count);
     let actor_count = options.actor_count;
+
+    if amount < actor_count {
+        amount = actor_count;
+    }
 
     info!("Message count: {}", amount);
 
