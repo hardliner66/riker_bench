@@ -18,9 +18,8 @@ num_cpus = "1.13.0"
 log = "0.4.8"
 env_logger = "0.7.1"
 
-riker = { git = "https://github.com/hardliner66/riker", branch = "allow_use_of_bounded_channel" }
+riker = { git = "https://github.com/riker-rs/riker" }
 
 [features]
 default=[]
 logging=[]
-flume=["riker/use_flume"]
