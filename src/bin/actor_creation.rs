@@ -115,7 +115,9 @@ fn main() {
 
     let act = sys.actor_of::<ActorCreation>("act").unwrap();
 
-    act.tell(opts.start_value, None);
+    let count = if opts.start_value < 2 { 2 } else { opts.start_value };
+
+    act.tell(count, None);
 
     while sys.user_root().has_children() {
         // in order to lower cpu usage, sleep here
