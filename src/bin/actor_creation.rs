@@ -117,7 +117,7 @@ fn main() {
 
     let count = if opts.start_value < 2 { 2 } else { opts.start_value };
 
-    act.tell(count, None);
+    act.tell(dbg!(count), None);
 
     while sys.user_root().has_children() {
         // in order to lower cpu usage, sleep here
