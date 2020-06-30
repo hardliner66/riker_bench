@@ -109,13 +109,16 @@ fn get_options() -> Options {
 
 // start the system and create an actor
 fn main() {
-    let sys = ActorSystem::new().unwrap();
+    let opts = get_options();
 
-    sys.user_root().has_children();
+    let sys = ActorSystem::new().unwrap();
 
     let act = sys.actor_of::<ActorCreation>("act").unwrap();
 
-    act.tell(10usize, None);
+    act.tell(opts.start_value, None);
 
-    while sys.user_root().has_children() {}
+    while sys.user_root().has_children() {
+        // in order to lower cpu usage, sleep here
+        std::thread::sleep(std::time::Duration::from_millis(50));
+    }
 }
