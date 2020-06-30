@@ -57,7 +57,7 @@ impl Actor for ActorCreation {
                 let r2 = msg;
                 if let Some(parent) = &self.parent {
                     let result = 2 + self.r1 + r2;
-                    assert!(result == 1 << self.spread);
+                    assert_eq!(result, 1 << self.spread);
                     parent.try_tell(result, ctx.myself());
                 } else {
                     let result = 1 + self.r1 + r2;
