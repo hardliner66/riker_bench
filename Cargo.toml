@@ -1,25 +1,13 @@
 [package]
-name = "riker_bench"
+name = "parallel_actor_creation_bug"
 version = "0.1.0"
 authors = ["hardliner66 <hardliner66@gmail.com>"]
 edition = "2018"
-default-run = "riker_bench"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [profile.release]
 debug = true
 
-[[bin]]
-name = "riker_bench"
-
 [dependencies]
-argparse = "0.2.2"
-num_cpus = "1.13.0"
-log = "0.4.8"
-env_logger = "0.7.1"
-
-riker = { git = "https://github.com/riker-rs/riker" }
-
-[features]
-default=[]
-logging=[]
+riker = { path = "../riker" }
+rayon = "1.3.1"

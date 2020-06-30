@@ -1,5 +1,0 @@
-debug = false
-
-[mailbox]
-# queue_bound        = 10
-# system_queue_bound = 10

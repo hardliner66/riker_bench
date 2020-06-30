@@ -7,15 +7,15 @@
 		{
 			"type": "lldb",
 			"request": "launch",
-			"name": "Debug executable 'riker_bench'",
+			"name": "Debug executable 'parallel_actor_creation_bug'",
 			"cargo": {
 				"args": [
 					"build",
-					"--bin=riker_bench",
-					"--package=riker_bench"
+					"--bin=parallel_actor_creation_bug",
+					"--package=parallel_actor_creation_bug"
 				],
 				"filter": {
-					"name": "riker_bench",
+					"name": "parallel_actor_creation_bug",
 					"kind": "bin"
 				}
 			},
@@ -25,90 +25,16 @@
 		{
 			"type": "lldb",
 			"request": "launch",
-			"name": "Debug unit tests in executable 'riker_bench'",
+			"name": "Debug unit tests in executable 'parallel_actor_creation_bug'",
 			"cargo": {
 				"args": [
 					"test",
 					"--no-run",
-					"--bin=riker_bench",
-					"--package=riker_bench"
+					"--bin=parallel_actor_creation_bug",
+					"--package=parallel_actor_creation_bug"
 				],
 				"filter": {
-					"name": "riker_bench",
-					"kind": "bin"
-				}
-			},
-			"args": [],
-			"cwd": "${workspaceFolder}"
-		},
-		{
-			"type": "lldb",
-			"request": "launch",
-			"name": "Debug executable 'abcd'",
-			"cargo": {
-				"args": [
-					"build",
-					"--bin=abcd",
-					"--package=riker_bench"
-				],
-				"filter": {
-					"name": "abcd",
-					"kind": "bin"
-				}
-			},
-			"args": [],
-			"cwd": "${workspaceFolder}"
-		},
-		{
-			"type": "lldb",
-			"request": "launch",
-			"name": "Debug unit tests in executable 'abcd'",
-			"cargo": {
-				"args": [
-					"test",
-					"--no-run",
-					"--bin=abcd",
-					"--package=riker_bench"
-				],
-				"filter": {
-					"name": "abcd",
-					"kind": "bin"
-				}
-			},
-			"args": [],
-			"cwd": "${workspaceFolder}"
-		},
-		{
-			"type": "lldb",
-			"request": "launch",
-			"name": "Debug executable 'actor_creation'",
-			"cargo": {
-				"args": [
-					"build",
-					"--bin=actor_creation",
-					"--package=riker_bench"
-				],
-				"filter": {
-					"name": "actor_creation",
-					"kind": "bin"
-				}
-			},
-			"args": [],
-			"cwd": "${workspaceFolder}"
-		},
-		{
-			"type": "lldb",
-			"request": "launch",
-			"name": "Debug unit tests in executable 'actor_creation'",
-			"cargo": {
-				"args": [
-					"test",
-					"--no-run",
-					"--bin=actor_creation",
-					"--package=riker_bench"
-				],
-				"filter": {
-					"name": "actor_creation",
+					"name": "parallel_actor_creation_bug",
 					"kind": "bin"
 				}
 			},
