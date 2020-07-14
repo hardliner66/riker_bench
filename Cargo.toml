@@ -16,9 +16,12 @@ name = "riker_bench"
 argparse = "0.2.2"
 num_cpus = "1.13.0"
 log = "0.4.8"
-env_logger = "0.7.1"
+fern = "0.6.0"
+char_combinator = "1.0.0"
 
-riker = { git = "https://github.com/riker-rs/riker" }
+riker = { path = "../riker" }
+chrono = "0.4.13"
+slog = "2.5.2"
 
 [features]
 default=[]

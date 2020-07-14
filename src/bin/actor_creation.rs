@@ -109,6 +109,8 @@ fn get_options() -> Options {
 
 // start the system and create an actor
 fn main() {
+    riker_bench::logging::init();
+
     let opts = get_options();
 
     let sys = ActorSystem::new().unwrap();

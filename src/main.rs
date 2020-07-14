@@ -118,7 +118,7 @@ fn get_options() -> Options {
 
 // start the system and create an actor
 fn main() {
-    env_logger::init();
+    riker_bench::logging::init();
 
     let options = get_options();
 
